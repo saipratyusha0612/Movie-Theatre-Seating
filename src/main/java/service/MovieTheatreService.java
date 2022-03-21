@@ -87,9 +87,10 @@ public class MovieTheatreService {
                 return;
             }
         }
-
+        boolean unableToAllocate = false;
+        Map<Integer, Set<Integer>> tempAvailableSeats = new HashMap<>(availableSeats);
         //if continuous seats are not available it splits the allocation to group the customers as closely as possible
-        for(int i=0;i<availableRowSeats.length;i++){
+        while(!unableToAllocate){
             final int p=numberOfSeats;
 
             //sorts the rows based on number of continuous seats available
@@ -108,14 +109,18 @@ public class MovieTheatreService {
                 }
             });
             int[] curr = getMaxConsecutive(availableRowSeats[0]);
+            if(curr[0]==0){
+                unableToAllocate = true;
+            }
             for(int j=curr[1];j<Math.min(curr[0], requestedSeats-numberOfSeats)+curr[1];j++) {
                 //removes the allocated seats from available seats
-                availableSeats.get(availableRowSeats[0]).remove(j);
+                tempAvailableSeats.get(availableRowSeats[0]).remove(j);
             }
             alloteRows.add(new int[]{availableRowSeats[0], Math.min(curr[0], requestedSeats-numberOfSeats), curr[1]});
             numberOfSeats = numberOfSeats+curr[0];
             if(numberOfSeats>=requestedSeats){
                 //allocates the seats found in multiple rows to the customer
+                availableSeats = tempAvailableSeats;
                 allocateSeperately(alloteRows, requestedSeats, reservationId);
                 return;
             }

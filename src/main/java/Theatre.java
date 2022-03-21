@@ -16,6 +16,10 @@ public class Theatre {
      */
     public static void main(String[] args){
         try {
+            if(args.length==0){
+                System.out.println("Please provide input file path in command line");
+                return;
+            }
             //Takes the command line args to read the file
             File inputFile = new File(args[0]);
             FileReader fileReader = new FileReader(inputFile);
